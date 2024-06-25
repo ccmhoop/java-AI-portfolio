@@ -31,8 +31,11 @@ public class EmbeddingController {
         }
         vectorStore.add(documents);
         //TODO Tex splitter needs to be optimized use syntax for OllamaChat/Rag ->
-        List<Document> results = vectorStore.similaritySearch(SearchRequest.query("Photo services").withTopK(3));
-        System.out.println(results);
+        List<Document> results = vectorStore.similaritySearch(SearchRequest.query("i want a video for my website").withTopK(10));
+        //Test vector similarity results
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println(results.get(i).getContent());
+        }
     }
 
 }
