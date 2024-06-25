@@ -23,7 +23,8 @@ public class OllamaController {
     }
 
     @GetMapping("/ai/generate")
-    public Map generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
+    public Map generate(@RequestParam(value = "message", defaultValue = "what is your ai-model name?") String message) {
+        System.out.printf("Generating Response");
         return Map.of("generation", chatModel.call(message));
     }
 
