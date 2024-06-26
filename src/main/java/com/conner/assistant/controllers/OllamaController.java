@@ -24,7 +24,7 @@ public class OllamaController {
         this.chatModel = chatModel;
     }
 
-    @GetMapping("/ai/generate")
+    @GetMapping("/ai/generateLlama3")
     public String generate(@RequestParam(value = "message", defaultValue = "photo services") String prompt) {
         return chatModel.call(ollamaService.generateLlama(prompt)).getResult().getOutput().getContent();
     }
