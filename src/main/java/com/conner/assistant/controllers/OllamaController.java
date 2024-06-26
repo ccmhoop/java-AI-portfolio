@@ -6,12 +6,12 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
+@RequestMapping("/ai")
+@CrossOrigin("*")
 public class OllamaController {
 
     private final OllamaChatModel chatModel;
@@ -24,12 +24,13 @@ public class OllamaController {
         this.chatModel = chatModel;
     }
 
-    @GetMapping("/ai/generateLlama3")
+    //TODO error handling
+    @GetMapping("/generateLlama3")
     public String generate(@RequestParam(value = "message", defaultValue = "photo services") String prompt) {
         return chatModel.call(ollamaService.generateLlama(prompt)).getResult().getOutput().getContent();
     }
 
-    @GetMapping("/ai/generateStream")
+    @GetMapping("/generateStream")
     public Flux<ChatResponse> generateStream(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         Prompt prompt = new Prompt(new UserMessage(message));
         return chatModel.stream(prompt);
