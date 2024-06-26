@@ -24,18 +24,17 @@ public class EmbeddingController {
     //TODO String[] Message adapt to frontend, add error handling, add http status
     @PostMapping("/ai/embedDocument")
     public void embedDocument() throws IOException {
-        List<String> message = TextSplitter.splitText("src/main/resources/docs/test.txt");
+        List<String> splitText = TextSplitter.splitText("src/main/resources/docs/test.txt");
         List<Document> documents = new ArrayList<>();
-        for (int i = 0; i < message.size(); i++) {
-            documents.add(new Document(message.get(i), Map.of("meta:"+i, "meta:"+i)));
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < splitText.size(); i++) {
+            builder.append(splitText.get(i));
+//            documents.add(new Document(message.get(i), Map.of("meta:"+i, "meta:"+i)));
         }
+        //placeholder until Text Splitter is finished
+        documents.add(new Document(builder.toString(), Map.of("meta:"+1, "meta:"+1)));
         vectorStore.add(documents);
-        //TODO Tex splitter needs to be optimized use syntax for OllamaChat/Rag ->
-        List<Document> results = vectorStore.similaritySearch(SearchRequest.query("i want a video for my website").withTopK(10));
-        //Test vector similarity results
-        for (int i = 0; i < results.size(); i++) {
-            System.out.println(results.get(i).getContent());
-        }
+
     }
 
 }
