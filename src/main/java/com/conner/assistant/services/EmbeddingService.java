@@ -26,7 +26,7 @@ public class EmbeddingService {
         TextSplitter textSplitter = new TokenTextSplitter();
         Document initialDocument = new Document(normalizedText, Map.of("metadata", "metadata"));
 
-        List<Document> documentList = textSplitter.apply(List.of(initialDocument)).stream()
+        List<Document> documentList = textSplitter.split(initialDocument).stream()
                 .map(document -> new Document(document.getContent(), Map.of("metadata", generateUniqueMetadata())))
                 .collect(Collectors.toList());
 
