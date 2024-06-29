@@ -24,7 +24,7 @@ public class EmbeddingService {
     public void createDocumentEmbeddings() throws IOException {
         String normalizedText = TextNormalizer.removeEmptySpaces("src/main/resources/docs/test.txt");
         TextSplitter textSplitter = new TokenTextSplitter();
-        Document initialDocument = new Document(normalizedText, Map.of("metadata:", "metadata:"));
+        Document initialDocument = new Document(normalizedText, Map.of("metadata", "metadata"));
 
         List<Document> documentList = textSplitter.apply(List.of(initialDocument)).stream()
                 .map(document -> new Document(document.getContent(), Map.of("metadata", generateUniqueMetadata())))
@@ -33,6 +33,7 @@ public class EmbeddingService {
         vectorStore.add(documentList);
     }
 
+    //TODO generate proper metadata
     private String generateUniqueMetadata() {
         return "webdevbuilders : " + UUID.randomUUID();
     }
