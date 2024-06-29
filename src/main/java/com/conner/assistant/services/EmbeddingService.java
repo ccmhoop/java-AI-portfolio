@@ -23,8 +23,8 @@ public class EmbeddingService {
     //TODO Error Handling, adapt to different types of files
     public void createDocumentEmbeddings() throws IOException {
         String normalizedText = TextNormalizer.removeEmptySpaces("src/main/resources/docs/test.txt");
-        TextSplitter textSplitter = new TokenTextSplitter(256,128,
-                32,100,true);
+
+        TextSplitter textSplitter = new TokenTextSplitter(256,128, 32,100,true);
 
         Document initialDocument = new Document(normalizedText, Map.of("metadata", "metadata"));
 
