@@ -24,10 +24,10 @@ public class EmbeddingService {
     public void createDocumentEmbeddings() throws IOException {
         String normalizedText = TextNormalizer.removeEmptySpaces("src/main/resources/docs/test.txt");
         TextSplitter textSplitter = new TokenTextSplitter();
-        Document initialDocument = new Document(normalizedText, Map.of("meta:", "meta:"));
+        Document initialDocument = new Document(normalizedText, Map.of("metadata:", "metadata:"));
 
         List<Document> documentList = textSplitter.apply(List.of(initialDocument)).stream()
-                .map(chunk -> new Document(chunk.getContent(), Map.of("meta", generateUniqueMetadata())))
+                .map(document -> new Document(document.getContent(), Map.of("metadata", generateUniqueMetadata())))
                 .collect(Collectors.toList());
 
         vectorStore.add(documentList);
