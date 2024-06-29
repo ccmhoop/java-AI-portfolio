@@ -21,13 +21,13 @@ public class EmbeddingController {
     private VectorStore vectorStore;
 
     @Autowired
-    private EmbeddingService EmbeddingService;
+    private EmbeddingService embeddingService;
 
     //TODO String[] Message adapt to frontend, add error handling, add http status, improve text splitter
     @PostMapping("/embedDocument")
     public HttpStatus embedDocument() {
         try {
-            vectorStore.add(EmbeddingService.createDocumentEmbeddings());
+            embeddingService.createDocumentEmbeddings();
         } catch (IOException e) {
             return HttpStatus.CONFLICT;
         }

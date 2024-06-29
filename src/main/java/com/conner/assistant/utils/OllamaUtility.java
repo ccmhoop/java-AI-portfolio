@@ -1,9 +1,12 @@
 package com.conner.assistant.utils;
 
+import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class OllamaUtility {
@@ -23,7 +26,12 @@ public class OllamaUtility {
 
     //Adapt code when needed
     private String generateContext(String prompt) {
-       return vectorStore.similaritySearch(SearchRequest.query(prompt).withTopK(3)).getFirst().getContent();
+        StringBuilder contextStringBuilder = new StringBuilder();
+        List<Document> documents = vectorStore.similaritySearch(SearchRequest.query(prompt).withTopK(5));
+        for (Document context : documents) {
+            contextStringBuilder.append(context.getContent()).append("\n");
+        }
+        return contextStringBuilder.toString();
     }
 
 }

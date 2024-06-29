@@ -12,6 +12,7 @@ public class OllamaService {
     @Autowired
     private OllamaUtility ollamaUtility;
 
+    //TODO Error Handling
     public Prompt generateLlama(String prompt) {
         return new Prompt(
                 ollamaUtility.llamaChatTemplate(prompt),
