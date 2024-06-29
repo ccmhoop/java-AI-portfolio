@@ -30,7 +30,7 @@ public class OllamaUtility {
 
         List<Document> documents = vectorStore.similaritySearch(SearchRequest.defaults()
                 .withQuery(prompt)
-                .withTopK(4)
+                .withTopK(3)
                 .withSimilarityThreshold(0.3)
         );
 
