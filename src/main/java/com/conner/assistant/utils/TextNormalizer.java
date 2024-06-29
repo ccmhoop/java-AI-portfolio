@@ -5,13 +5,14 @@ import java.io.*;
 public class TextNormalizer {
 
     //Adapt when needed example to PDF or MD
-    public static String textRemoveEmptyLines(String filePath) throws IOException {
+    public static String removeEmptySpaces(String filePath) throws IOException {
         StringBuilder buildText = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         while ((line = reader.readLine()) != null) {
             if (!line.trim().isEmpty()) {
-                buildText.append(line);
+                //replace double spaces and separates the next line with a space " "
+                buildText.append(line.replaceAll("\\s+"," ")).append(" ");
             }
         }
         return buildText.toString();

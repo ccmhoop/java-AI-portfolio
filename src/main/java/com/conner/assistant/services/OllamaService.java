@@ -18,8 +18,9 @@ public class OllamaService {
                 ollamaUtility.llamaChatTemplate(prompt),
                 OllamaOptions.create()
                         .withModel("llama3")
-                        .withTemperature(0.7f)
+                        .withTemperature(0.0f)
                         .withTopK(5)
+                        .withTopP(0.3f)
         );
     }
 }

@@ -26,7 +26,7 @@ public class OllamaController {
 
     //TODO error handling
     @GetMapping("/generateLlama3")
-    public String generate(@RequestParam(value = "message", defaultValue = "photo services") String prompt) {
+    public String generate(@RequestParam String prompt) {
         return chatModel.call(ollamaService.generateLlama(prompt)).getResult().getOutput().getContent();
     }
 

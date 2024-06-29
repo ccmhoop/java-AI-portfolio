@@ -14,7 +14,7 @@ public class OllamaUtility {
     @Autowired
     private VectorStore vectorStore;
 
-    private final static String SYSTEM_INSTRUCTION = "You're a chatbot working for webdevbuilders";
+    private final static String SYSTEM_INSTRUCTION = "You're a chatbot working for webdevbuilders.";
 
     public String llamaChatTemplate(String prompt) {
         return "<|start_header_id|>system<|end_header_id|>" + SYSTEM_INSTRUCTION + "<|eot_id|> " +
@@ -24,13 +24,24 @@ public class OllamaUtility {
                 "<|start_header_id|>response<|end_header_id|>";
     }
 
-    //Adapt code when needed
+    //Adapt code when needed split method
     private String generateContext(String prompt) {
         StringBuilder contextStringBuilder = new StringBuilder();
-        List<Document> documents = vectorStore.similaritySearch(SearchRequest.query(prompt).withTopK(5));
-        for (Document context : documents) {
-            contextStringBuilder.append(context.getContent()).append("\n");
+
+        List<Document> documents = vectorStore.similaritySearch(SearchRequest.defaults()
+                .withQuery(prompt)
+                .withTopK(4)
+                .withSimilarityThreshold(0.3)
+        );
+
+        for (int i = 0; i < documents.size(); i++) {
+            contextStringBuilder.append("Retrieved document : ")
+                    .append(i)
+                    .append(" { ")
+                    .append(documents.get(i).getContent())
+                    .append(" }\n");
         }
+
         return contextStringBuilder.toString();
     }
 
