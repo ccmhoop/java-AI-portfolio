@@ -1,36 +1,10 @@
 import { Outlet, Link, useLoaderData } from "react-router-dom";
 import { getContacts } from "../js/contacts";
-import axios from "axios";
+import login from "../js/login";
 
 export async function loader() {
   const contacts = await getContacts();
   return { contacts };
-}
-
-let data = JSON.stringify({
-  username: "admin",
-  password: "password",
-});
-
-let config = {
-  method: "post",
-  maxBodyLength: Infinity,
-  url: "http://localhost:8080/auth/login",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  data: data,
-};
-
-async function login() {
-  await axios
-    .request(config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 }
 
 export default function Root() {
@@ -38,7 +12,7 @@ export default function Root() {
   return (
     <>
       <div id="sidebar">
-        <h1>React Router Contacts</h1>
+        <h1>TTB-Industries</h1>
         <div>
           <form id="search-form" role="search">
             <input

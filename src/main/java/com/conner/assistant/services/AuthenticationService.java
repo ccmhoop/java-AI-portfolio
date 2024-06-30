@@ -8,6 +8,7 @@ import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.models.Role;
 import com.conner.assistant.repository.RoleRepository;
 import com.conner.assistant.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,6 +51,15 @@ public class AuthenticationService {
         } catch (AuthenticationException e) {
             return new LoginResponseDTO(null, "");
         }
+    }
+
+    public Cookie httpOnlyCookieJwt(String jwt) {
+        Cookie cookie = new Cookie("jwt", jwt);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        // cookie.setMaxAge(60 * 60 * 10); // needed for jwt refresh
+        return cookie;
     }
 
 }
