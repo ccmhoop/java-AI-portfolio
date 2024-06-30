@@ -17,10 +17,10 @@ public class OllamaService {
         return new Prompt(
                 ollamaUtility.llamaChatTemplate(prompt),
                 OllamaOptions.create()
-                        .withModel("llama3")
-                        .withTemperature(0.0f)
+                        .withTemperature(0.5f)
                         .withTopK(5)
-                        .withTopP(0.3f)
+                        .withTopP(1f)
+                        .withModel("llama3")
         );
     }
 }
