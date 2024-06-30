@@ -1,9 +1,36 @@
 import { Outlet, Link, useLoaderData } from "react-router-dom";
 import { getContacts } from "../js/contacts";
+import axios from "axios";
 
 export async function loader() {
   const contacts = await getContacts();
   return { contacts };
+}
+
+let data = JSON.stringify({
+  username: "admin",
+  password: "password",
+});
+
+let config = {
+  method: "post",
+  maxBodyLength: Infinity,
+  url: "http://localhost:8080/auth/login",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  data: data,
+};
+
+async function login() {
+  await axios
+    .request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 export default function Root() {
@@ -27,6 +54,7 @@ export default function Root() {
           <form method="post">
             <button type="submit">New</button>
           </form>
+          <button onClick={login}>login</button>
         </div>
         <nav>
           {contacts.length ? (

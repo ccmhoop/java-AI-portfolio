@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/ai")
-@CrossOrigin("*")
 public class OllamaController {
 
     private final OllamaChatModel chatModel;
