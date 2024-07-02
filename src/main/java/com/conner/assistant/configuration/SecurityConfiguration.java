@@ -28,7 +28,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -59,34 +58,24 @@ public class SecurityConfiguration {
         return new ProviderManager(daoProvider);
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .cors(Customizer.withDefaults())
-                .csrf( csrf -> csrf.csrfTokenRepository(csrfTokenRepository()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                            auth.requestMatchers("/").permitAll();
-                            auth.requestMatchers("/ai/**").permitAll();
-                            auth.requestMatchers("/auth/**").permitAll();
-                            auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                            auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
-                            auth.anyRequest().authenticated();
-                        }
-                )
-                .formLogin( login -> login.loginPage("/auth/login").permitAll())
-                .httpBasic(Customizer.withDefaults())
+                    auth.requestMatchers("/").permitAll();
+                    auth.requestMatchers("/ai/**").permitAll();
+                    auth.requestMatchers("/auth/**").permitAll();
+                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
+                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
+                    auth.anyRequest().authenticated();
+                })
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .jwtAuthenticationConverter(jwtAuthenticationConverter())))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .build();
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        return http.build();
     }
-
-    @Bean
-    public CookieCsrfTokenRepository csrfTokenRepository() {
-        return CookieCsrfTokenRepository.withHttpOnlyFalse();
-    }
-
 
     @Bean
     public JwtDecoder jwtDecoder() {
@@ -114,8 +103,8 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type","Cookie", "_csrf"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -123,3 +112,5 @@ public class SecurityConfiguration {
     }
 
 }
+
+
