@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/Error-page.jsx";
 import Root, { loader as rootLoader } from "./routes/Root.jsx";
 import Contact from "./routes/Contact.jsx";
+import Home from "./routes/Home.jsx";
 
 const router = createBrowserRouter([
   {
@@ -14,9 +15,13 @@ const router = createBrowserRouter([
     loader: rootLoader,
     children: [
       {
+        path: "",
+        element: <Home/>,
+      },
+      {
         path: "contacts/:contactId",
         element: <Contact />,
-      },
+      }
     ],
   },
 ]);

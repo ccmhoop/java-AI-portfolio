@@ -48,7 +48,7 @@ button {
 textarea:hover,
 input:hover,
 button:hover {
-  box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.6), 0 1px 2px hsla(0, 0%, 0%, 0.2);
+  /*box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.6), 0 1px 2px hsla(0, 0%, 0%, 0.2);*/
 }
 
 button:active {
@@ -80,6 +80,35 @@ button:active {
   color: #eeb004;
 }
 
+#home textarea{
+  resize: none;
+  width: 100%;
+  height: 90vh;
+
+    border: none;
+    background-color: white;
+    outline: none;
+
+}
+
+#home input {
+  width: 89%;
+  background-color: white;
+}
+#home button {
+  width: 10%;
+  background-color: white;
+  margin-left:1%;
+}
+
+#home input, button{
+  margin-top: 1%;
+}
+
+#home textarea:hover{
+  border:  10px  #f44250  ;
+}
+
 form[action$="destroy"] button {
   color: #f44250;
 }
@@ -101,6 +130,11 @@ form[action$="destroy"] button {
   height: 100%;
   width: 100%;
 }
+#root button{
+
+}
+
+#sidebar button{}
 
 #sidebar {
   width: 22rem;
@@ -148,7 +182,7 @@ form[action$="destroy"] button {
 }
 
 #sidebar > div form input[type="search"] {
-  width: 100%;
+  width: 10%;
   padding-left: 2rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' /%3E%3C/svg%3E");
   background-repeat: no-repeat;
