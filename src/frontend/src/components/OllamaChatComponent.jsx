@@ -4,7 +4,7 @@ import axios from "axios";
 export default function OllamaChatComponent() {
 
     const [ prompt, setPrompt] = useState('');
-    const [ aiResponse, setAiResponse ] = useState( '');
+    const [ aiResponse, setAiResponse ] = useState('');
 
     const handleChatInput = async (e) => {
         e.preventDefault();
@@ -12,7 +12,8 @@ export default function OllamaChatComponent() {
             method: 'get',
             maxBodyLength: Infinity,
             url: `http://localhost:8080/ai/generateLlama3?prompt=${prompt}`,
-            headers: { }
+            headers: { },
+            withCredentials: true,
         };
 
         await axios.request(config)

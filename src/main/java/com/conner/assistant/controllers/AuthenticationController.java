@@ -5,6 +5,7 @@ import com.conner.assistant.dto.LoginResponseDTO;
 import com.conner.assistant.dto.RegistrationDTO;
 import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.services.AuthenticationService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,21 @@ public class AuthenticationController {
 
         if (loginResponse.getUser() != null) {
             response.addCookie(authenticationService.httpOnlyCookieJwt(loginResponse.getJwt()));
+
+                Cookie username = new Cookie("username", loginRequest.getUsername());
+            username.setHttpOnly(true);
+            username.setSecure(true);
+            username.setPath("/");
+
+                Cookie  password = new Cookie("password", loginRequest.getPassword());
+            password.setHttpOnly(true);
+            password.setSecure(true);
+            password.setPath("/");
+
+            response.addCookie(username);
+            response.addCookie(password);
+
+                // cookie.setMaxAge(60 * 60 * 10); // needed for jwt refresh
             return ResponseEntity.ok(loginResponse);
         }
 
