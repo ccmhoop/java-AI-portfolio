@@ -38,11 +38,12 @@ public class AuthenticationController {
         if (loginResponse.getUser() != null) {
             response.addCookie(authenticationService.httpOnlyCookieJwt(loginResponse.getJwt()));
 
-            Cookie username = new Cookie("username", loginRequest.getUsername());
-            username.setHttpOnly(true);
-            username.setSecure(true);
-            username.setPath("/");
-            response.addCookie(username);
+            Cookie usernameCookie = new Cookie("username", loginRequest.getUsername());
+            usernameCookie.setHttpOnly(true);
+            usernameCookie.setSecure(true);
+            usernameCookie.setPath("/");
+
+            response.addCookie(usernameCookie);
 
             return ResponseEntity.ok(loginResponse);
         }
