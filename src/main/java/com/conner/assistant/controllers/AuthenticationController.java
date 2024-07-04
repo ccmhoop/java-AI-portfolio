@@ -38,25 +38,15 @@ public class AuthenticationController {
         if (loginResponse.getUser() != null) {
             response.addCookie(authenticationService.httpOnlyCookieJwt(loginResponse.getJwt()));
 
-                Cookie username = new Cookie("username", loginRequest.getUsername());
+            Cookie username = new Cookie("username", loginRequest.getUsername());
             username.setHttpOnly(true);
             username.setSecure(true);
             username.setPath("/");
-
-                Cookie  password = new Cookie("password", loginRequest.getPassword());
-            password.setHttpOnly(true);
-            password.setSecure(true);
-            password.setPath("/");
-
             response.addCookie(username);
-            response.addCookie(password);
 
-                // cookie.setMaxAge(60 * 60 * 10); // needed for jwt refresh
             return ResponseEntity.ok(loginResponse);
         }
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 }
 

@@ -1,8 +1,8 @@
 package com.conner.assistant.controllers;
 
-import com.conner.assistant.dto.LoginResponseDTO;
 import com.conner.assistant.services.AuthenticationService;
 import com.conner.assistant.services.OllamaService;
+import com.conner.assistant.services.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
-import java.util.Arrays;
-
 @RestController
 @RequestMapping("/ai")
 public class OllamaController {
@@ -24,6 +22,9 @@ public class OllamaController {
 
     @Autowired
     private OllamaService ollamaService;
+
+    @Autowired
+    TokenService tokenService;
 
     private final AuthenticationService authenticationService;
 
@@ -34,15 +35,20 @@ public class OllamaController {
         this.authenticationService = authenticationService;
     }
 
-    //TODO error handling
+    //TODO error handling set response entity
     @GetMapping("/generateLlama3")
     public String generate(@RequestParam String prompt, HttpServletRequest request, HttpServletResponse response) {
-        //testing JWt
-        Cookie[] cookies = request.getCookies();
-
-        System.out.println(cookies[0]);
-
-        return chatModel.call(ollamaService.generateLlama(prompt)).getResult().getOutput().getContent();
+        try {
+            Cookie[] cookies = request.getCookies();
+            tokenService.checkJwt(cookies[0].getValue());
+            return chatModel
+                    .call(ollamaService.generateLlama(prompt))
+                    .getResult()
+                    .getOutput()
+                    .getContent();
+        }catch (Exception e) {
+            return "No AI subscription found";
+        }
     }
 
     @GetMapping("/generateStream")
