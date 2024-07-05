@@ -21,6 +21,12 @@ public class TokenService {
     @Autowired
     private JwtDecoder jwtDecoder;
 
+    /**
+     * Generates a JSON Web Token (JWT) using the provided authentication information.
+     *
+     * @param auth the authentication details
+     * @return the generated JWT
+     */
     public String generateJwt(Authentication auth) {
 
         Instant now = Instant.now();

@@ -16,6 +16,9 @@ public class RSAKeyProperties {
     private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
 
+    /**
+     * Represents a container for RSA public and private keys.
+     */
     public RSAKeyProperties(){
         KeyPair pair = KeyGeneratorUtility.generateRsaKey();
         this.publicKey = (RSAPublicKey) pair.getPublic();

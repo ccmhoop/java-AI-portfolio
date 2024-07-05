@@ -16,6 +16,12 @@ public class OllamaUtility {
 
     private final static String SYSTEM_INSTRUCTION = "You're an agent working for webdevbuilders.";
 
+    /**
+     * Generates a chat template for the llama3 AI model.
+     *
+     * @param prompt the input prompt string
+     * @return a chat template for the llama assistant
+     */
     public String llamaChatTemplate(String prompt) {
         return "<|start_header_id|>system<|end_header_id|>" + SYSTEM_INSTRUCTION + "<|eot_id|> " +
                 "<|start_header_id|>context<|end_header_id|>" + generateContext(prompt) + "<|eot_id|> " +

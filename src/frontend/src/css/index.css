@@ -22,6 +22,7 @@ code {
 
 html,
 body {
+  background-color: #131313;
   height: 100%;
   margin: 0;
   line-height: 1.5;
@@ -40,10 +41,7 @@ button {
   line-height: 1.5;
   margin: 0;
 }
-button {
-  color: #3992ff;
-  font-weight: 500;
-}
+
 
 textarea:hover,
 input:hover,
@@ -80,29 +78,45 @@ button:active {
   color: #eeb004;
 }
 
+#home{
+  margin-top: -5vh;
+  background-color: #131313;
+}
+
+#home h1{
+  color: #e3e3e3;
+}
+
 #home textarea{
+  background-color: #3f3f3f;
+  margin-top: 0;
   resize: none;
   width: 100%;
-  height: 90vh;
-
-    border: none;
-    background-color: white;
-    outline: none;
-
+  height: 75vh;
 }
 
 #home input {
   width: 89%;
-  background-color: white;
+  color: white;
+  margin-bottom: 10px;
 }
+
+#home input, textarea{
+  background-color: #282828  ;
+  color: white;
+  border: none;
+  outline: none;
+}
+
 #home button {
   width: 10%;
-  background-color: white;
+  background-color: #a688fa;
   margin-left:1%;
+  color: #121212;
 }
 
 #home input, button{
-  margin-top: 1%;
+  margin-top: 3vh;
 }
 
 #home textarea:hover{
@@ -130,18 +144,31 @@ form[action$="destroy"] button {
   height: 100%;
   width: 100%;
 }
-#root button{
+
+#sidebar {
+  width: 16rem;
+  background-color: #575757 ;
+  border-right: solid 1px #3f3f3f  ;
+  display: flex;
+  flex-direction: column;
+  border-bottom-right-radius: 15px;
+  border-top-right-radius: 15px;
+  align-items: center;
 
 }
 
-#sidebar button{}
+#sidebar input{
+  background-color: white ;
+  color: #121212;
+  border: none;
+  outline: none;
+  margin-bottom: 5px;
+}
 
-#sidebar {
-  width: 22rem;
-  background-color: #f7f7f7;
-  border-right: solid 1px #e3e3e3;
-  display: flex;
-  flex-direction: column;
+#sidebar button{
+  margin-top: 1vh;
+  background-color: #a688fa;
+  color: #121212;
 }
 
 #sidebar > * {
@@ -156,9 +183,11 @@ form[action$="destroy"] button {
   align-items: center;
   margin: 0;
   padding: 1rem 2rem;
-  border-top: 1px solid #e3e3e3;
+  border-top: 1px solid #3f3f3f ;
   order: 1;
   line-height: 1;
+  color: #e3e3e3;
+  width: 100%;
 }
 
 #sidebar h1::before {
@@ -174,7 +203,8 @@ form[action$="destroy"] button {
   gap: 0.5rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid #3f3f3f ;
+
 }
 
 #sidebar > div form {
@@ -228,6 +258,8 @@ form[action$="destroy"] button {
   color: inherit;
 }
 
+
+
 i {
   color: #818181;
 }
@@ -254,7 +286,7 @@ i {
   white-space: pre;
   padding: 0.5rem;
   border-radius: 8px;
-  color: inherit;
+  /*color: inherit;*/
   text-decoration: none;
   gap: 1rem;
 }

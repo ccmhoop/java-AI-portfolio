@@ -14,26 +14,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("/ai")
 public class OllamaController {
 
-    private final OllamaChatModel chatModel;
-
+    @Autowired
+    private OllamaChatModel chatModel;
     @Autowired
     private OllamaService ollamaService;
-
     @Autowired
-    TokenService tokenService;
-
-    private final AuthenticationService authenticationService;
-
-
+    private TokenService tokenService;
     @Autowired
-    public OllamaController(OllamaChatModel chatModel, AuthenticationService authenticationService) {
-        this.chatModel = chatModel;
-        this.authenticationService = authenticationService;
-    }
+    private AuthenticationService authenticationService;
+
 
     //TODO error handling set response entity
     @GetMapping("/generateLlama3")

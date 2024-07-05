@@ -6,7 +6,7 @@ export default function OllamaChatComponent() {
     const [ prompt, setPrompt] = useState('');
     const [ aiResponse, setAiResponse ] = useState('');
 
-    const handleChatInput = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let config = {
             method: 'get',
@@ -19,7 +19,7 @@ export default function OllamaChatComponent() {
         await axios.request(config)
             .then((response) => {
                 setAiResponse(response.data);
-                console.log(JSON.stringify(response.data));
+                setPrompt('')
             })
             .catch((error) => {
                 console.log(error);
@@ -28,7 +28,7 @@ export default function OllamaChatComponent() {
 
     return (<>
         <textarea readOnly={true} value={aiResponse}></textarea>
-        <form onSubmit={handleChatInput}>
+        <form onSubmit={handleSubmit}>
             <input
                 type="text"
                 value={prompt}

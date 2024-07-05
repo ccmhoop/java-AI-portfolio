@@ -32,22 +32,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
-
-        LoginResponseDTO loginResponse = authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword());
-
-        if (loginResponse.getUser() != null) {
-            response.addCookie(authenticationService.httpOnlyCookieJwt(loginResponse.getJwt()));
-
-            Cookie usernameCookie = new Cookie("username", loginRequest.getUsername());
-            usernameCookie.setHttpOnly(true);
-            usernameCookie.setSecure(true);
-            usernameCookie.setPath("/");
-
-            response.addCookie(usernameCookie);
-
-            return ResponseEntity.ok(loginResponse);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        return authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword(), response);
     }
 }
 

@@ -17,12 +17,19 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Loads a User by username. This method is used by the authentication framework to retrieve the user details.
+     *
+     * @param username the username of the user to load
+     * @return the UserDetails object representing the user
+     * @throws UsernameNotFoundException if the user is not found
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         System.out.println("detail service");
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
-
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("user is not valid"));
     }
 }

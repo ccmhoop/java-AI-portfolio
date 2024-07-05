@@ -14,21 +14,16 @@ import java.io.IOException;
 @RequestMapping("/ai")
 public class EmbeddingController {
 
-    @Autowired
-    private VectorStore vectorStore;
+    private final EmbeddingService embeddingService;
 
-    @Autowired
-    private EmbeddingService embeddingService;
+    public EmbeddingController(EmbeddingService embeddingService) {
+        this.embeddingService = embeddingService;
+    }
 
     //TODO String[] Message adapt to frontend, add error handling, add http status, improve text splitter
     @PostMapping("/embedDocument")
     public HttpStatus embedDocument() {
-        try {
-            embeddingService.createDocumentEmbeddings();
-        } catch (IOException e) {
-            return HttpStatus.CONFLICT;
-        }
-        return HttpStatus.ACCEPTED;
+        return embeddingService.createDocumentEmbeddings();
     }
 
 }

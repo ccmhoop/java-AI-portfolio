@@ -17,7 +17,6 @@ function LoginComponent() {
                 },
                 withCredentials: true
             });
-            console.log('Login successful:');
         } catch (error) {
             console.error('Error logging in:', error);
         }
@@ -32,7 +31,6 @@ function LoginComponent() {
                 placeholder="Username"
                 required
             />
-            <button type="submit">Login</button>
             <input
                 type="password"
                 value={password}
@@ -40,6 +38,7 @@ function LoginComponent() {
                 placeholder="Password"
                 required
             />
+            <button type="submit">Login</button>
         </form>
     );
 }

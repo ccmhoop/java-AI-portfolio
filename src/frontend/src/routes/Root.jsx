@@ -17,7 +17,6 @@ export default function Root() {
       <div id="sidebar">
         <h1>TTB-Industries</h1>
         <div>
-
           <LoginComponent />
         </div>
         <nav>

@@ -13,6 +13,12 @@ public class OllamaService {
     private OllamaUtility ollamaUtility;
 
     //TODO Error Handling
+    /**
+     * Generates a llama Prompt object based on the given prompt string.
+     *
+     * @param prompt the input prompt string
+     * @return a Prompt object with the generated chat template and OllamaOptions
+     */
     public Prompt generateLlama(String prompt) {
         return new Prompt(
                 ollamaUtility.llamaChatTemplate(prompt),
