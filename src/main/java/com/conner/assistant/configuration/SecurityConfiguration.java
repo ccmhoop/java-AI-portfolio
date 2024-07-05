@@ -1,6 +1,7 @@
 package com.conner.assistant.configuration;
 
 import com.conner.assistant.utils.RSAKeyProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,8 +29,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.springframework.session.web.http.CookieHttpSessionIdResolver;
-import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -41,24 +40,8 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final RSAKeyProperties keys;
-
-    public SecurityConfiguration(RSAKeyProperties keys) {
-        this.keys = keys;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authManager(UserDetailsService detailsService) {
-        DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
-        daoProvider.setUserDetailsService(detailsService);
-        daoProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(daoProvider);
-    }
+    @Autowired
+    private RSAKeyProperties keys;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -77,14 +60,20 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
+
     @Bean
-    public CookieHttpSessionIdResolver httpSessionIdResolver() {
-        CookieHttpSessionIdResolver sessionIdResolver = new CookieHttpSessionIdResolver();
-        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-        cookieSerializer.setSameSite("Strict");
-        sessionIdResolver.setCookieSerializer(cookieSerializer);
-        return sessionIdResolver;
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager authManager(UserDetailsService detailsService) {
+        DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
+        daoProvider.setUserDetailsService(detailsService);
+        daoProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(daoProvider);
+    }
+
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
@@ -108,7 +97,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));

@@ -88,7 +88,7 @@ public class AuthenticationService {
 
     private Cookie createCookie(String name, String value, boolean httpOnly) {
         Cookie cookie = new Cookie(name, value);
-
+        cookie.setAttribute("SameSite","Strict");
         cookie.setHttpOnly(httpOnly);
         cookie.setSecure(true);
         cookie.setPath("/");
