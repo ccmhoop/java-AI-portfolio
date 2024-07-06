@@ -17,7 +17,7 @@ public class UserRole {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private long id;
-    private String authority; // Add this if not present
+    private String authority;
 
     public UserRole(String authority) {
         this.authority = authority;
