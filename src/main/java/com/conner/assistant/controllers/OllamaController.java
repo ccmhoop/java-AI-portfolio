@@ -2,7 +2,6 @@ package com.conner.assistant.controllers;
 
 import com.conner.assistant.models.RefreshToken;
 import com.conner.assistant.repository.RefreshTokenRepository;
-import com.conner.assistant.repository.UserRepository;
 import com.conner.assistant.services.RefreshTokenService;
 import com.conner.assistant.services.OllamaService;
 import com.conner.assistant.services.JwtService;

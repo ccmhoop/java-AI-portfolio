@@ -1,10 +1,7 @@
 package com.conner.assistant.controllers;
 
 import com.conner.assistant.dto.*;
-//import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.models.RefreshToken;
-import com.conner.assistant.models.UserInfo;
-//import com.conner.assistant.services.RegistrationService;
 import com.conner.assistant.services.RefreshTokenService;
 import com.conner.assistant.services.JwtService;
 import com.conner.assistant.utils.CookieUtility;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-//    private final RegistrationService authenticationService;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -41,14 +37,6 @@ public class AuthenticationController {
     @Autowired
     JwtService jwtService;
 
-//    public AuthenticationController(RegistrationService authenticationService) {
-//        this.authenticationService = authenticationService;
-//    }
-
-//    @PostMapping("/register")
-//    public UserInfo registerUser(@RequestBody RegistrationDTO body) {
-//        return authenticationService.registerUser(body.getUsername(), body.getPassword());
-//    }
 
 
     @PostMapping("/login")
