@@ -29,7 +29,6 @@ public class UserService implements UserDetailsService {
 
         System.out.println("detail service");
 
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("user is not valid"));
+        return userRepository.findByUsername(username);
     }
 }

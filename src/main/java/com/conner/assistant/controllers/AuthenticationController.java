@@ -1,14 +1,18 @@
 package com.conner.assistant.controllers;
 
-import com.conner.assistant.dto.LoginRequestDTO;
-import com.conner.assistant.dto.LoginResponseDTO;
-import com.conner.assistant.dto.RegistrationDTO;
+import com.conner.assistant.dto.*;
 import com.conner.assistant.models.ApplicationUser;
-import com.conner.assistant.services.AuthenticationService;
-import jakarta.servlet.http.Cookie;
+import com.conner.assistant.models.RefreshToken;
+import com.conner.assistant.services.RegistrationService;
+import com.conner.assistant.services.RefreshTokenService;
+import com.conner.assistant.services.TokenService;
+import com.conner.assistant.utils.CookieUtility;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+    private final RegistrationService authenticationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    RefreshTokenService refreshTokenService;
+
+    @Autowired
+    TokenService tokenService;
+
+    @Autowired
+    CookieUtility cookieUtility;
+
+    public AuthenticationController(RegistrationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -30,10 +46,40 @@ public class AuthenticationController {
         return authenticationService.registerUser(body.getUsername(), body.getPassword());
     }
 
+
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
-        return authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword(), response);
+    public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
+
+        if(authentication.isAuthenticated()){
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());
+            JwtResponseDTO jwtResponseDTO = JwtResponseDTO.builder()
+                    .accessToken(tokenService.GenerateToken(authRequestDTO.getUsername()))
+                    .token(refreshToken.getToken())
+                    .build();
+            response.addCookie(cookieUtility.createCookie("accessToken", jwtResponseDTO.getAccessToken(), true));
+            response.addCookie(cookieUtility.createCookie("token", jwtResponseDTO.getToken(), false));
+            return jwtResponseDTO;
+        } else {
+            throw new UsernameNotFoundException("invalid user request..!!");
+        }
     }
+
+    @PostMapping("/refreshToken")
+    public JwtResponseDTO refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO){
+        return refreshTokenService.findByToken(refreshTokenRequestDTO.getToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getApplicationUser)
+                .map(userInfo -> {
+                    String accessToken = tokenService.GenerateToken(userInfo.getUsername());
+                    return JwtResponseDTO.builder()
+                            .accessToken(accessToken)
+                            .token(refreshTokenRequestDTO.getToken()).build();
+                }).orElseThrow(() ->new RuntimeException("Refresh Token is not in DB..!!"));
+    }
+
 }
 
 
