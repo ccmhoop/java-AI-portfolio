@@ -25,7 +25,10 @@ public class AssistantApplication {
     CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
 
-            if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
+            if (roleRepository.findByAuthority("ADMIN").isPresent()) {
+                return;
+            }
+
             UserRole adminRole = new UserRole("ADMIN");
             UserRole userRole = new UserRole("USER");
 
