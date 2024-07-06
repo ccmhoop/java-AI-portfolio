@@ -34,18 +34,15 @@ public class AssistantApplication {
 
             roleRepository.save(adminRole);
             roleRepository.save(userRole);
-            Set<UserRole> roles = new HashSet<>();
-            roles.add(adminRole);
-            roles.add(userRole);
+            Set<UserRole> admin = new HashSet<>();
+            admin.add(adminRole);
+            Set<UserRole> user = new HashSet<>();
+            user.add(userRole);
 
-            UserInfo admin = new UserInfo(
-                    1L, "admin", passwordEncoder.encode("password"), roles);
-
-            UserInfo user = new UserInfo(
-                    2L, "user", passwordEncoder.encode("password"), roles);
-
-            userRepository.save(admin);
-            userRepository.save(user);
+            userRepository.save(new UserInfo(
+                    1L, "admin", passwordEncoder.encode("password"), admin));
+            userRepository.save( new UserInfo(
+                    2L, "user", passwordEncoder.encode("password"), user));
         };
     }
 }
