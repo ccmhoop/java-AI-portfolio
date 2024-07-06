@@ -12,9 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//import com.conner.assistant.models.ApplicationUser;
-//import com.conner.assistant.models.Role;
-//import com.conner.assistant.repository.RoleRepository;
 import com.conner.assistant.repository.UserRepository;
 
 @SpringBootApplication
@@ -34,6 +31,7 @@ public class AssistantApplication {
 
             roleRepository.save(adminRole);
             roleRepository.save(userRole);
+
             Set<UserRole> admin = new HashSet<>();
             admin.add(adminRole);
             Set<UserRole> user = new HashSet<>();
