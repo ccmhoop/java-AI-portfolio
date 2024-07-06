@@ -6,25 +6,21 @@ import lombok.*;
 
 import java.time.Instant;
 
-    @Entity
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public class RefreshToken {
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class RefreshToken {
 
-        @Id
-        @GeneratedValue
-        private Long id;
-        @Getter
-        private String token;
-        @Getter
-        private Instant expiryDate;
-
-        @OneToOne
-        @Getter
-        @JoinColumn(name = "user_id", referencedColumnName = "userId")
-        private ApplicationUser applicationUser;
-
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String token;
+    private Instant expiryDate;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserInfo userInfo;
+}
 
 

@@ -4,12 +4,11 @@ import com.conner.assistant.models.RefreshToken;
 import com.conner.assistant.repository.RefreshTokenRepository;
 import com.conner.assistant.repository.UserRepository;
 import com.conner.assistant.services.RefreshTokenService;
-import com.conner.assistant.services.RegistrationService;
 import com.conner.assistant.services.OllamaService;
-import com.conner.assistant.services.TokenService;
+import com.conner.assistant.services.JwtService;
+import com.conner.assistant.services.UserDetailsServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -27,10 +26,10 @@ public class OllamaController {
     @Autowired
     private OllamaService ollamaService;
     @Autowired
-    private TokenService tokenService;
+    private JwtService tokenService;
 
     @Autowired
-    UserRepository userRepository;
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     RefreshTokenService refreshTokenService;
@@ -46,7 +45,7 @@ public class OllamaController {
             RefreshToken refreshToken = refreshTokenRepository.findByToken(cookies[1].getValue()).orElseThrow();
             refreshTokenService.verifyExpiration(refreshToken);
             String username = tokenService.extractUsername(cookies[0].getValue());
-            tokenService.validateToken(cookies[0].getValue(), userRepository.findByUsername(username));
+            tokenService.validateToken(cookies[0].getValue(), userDetailsService.loadUserByUsername(username));
             return chatModel
                     .call(ollamaService.generateLlama(prompt))
                     .getResult()

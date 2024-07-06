@@ -1,11 +1,12 @@
 package com.conner.assistant.controllers;
 
 import com.conner.assistant.dto.*;
-import com.conner.assistant.models.ApplicationUser;
+//import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.models.RefreshToken;
-import com.conner.assistant.services.RegistrationService;
+import com.conner.assistant.models.UserInfo;
+//import com.conner.assistant.services.RegistrationService;
 import com.conner.assistant.services.RefreshTokenService;
-import com.conner.assistant.services.TokenService;
+import com.conner.assistant.services.JwtService;
 import com.conner.assistant.utils.CookieUtility;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final RegistrationService authenticationService;
+//    private final RegistrationService authenticationService;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -32,31 +33,31 @@ public class AuthenticationController {
     RefreshTokenService refreshTokenService;
 
     @Autowired
-    TokenService tokenService;
+    JwtService tokenService;
 
     @Autowired
     CookieUtility cookieUtility;
 
-    public AuthenticationController(RegistrationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+    @Autowired
+    JwtService jwtService;
 
-    @PostMapping("/register")
-    public ApplicationUser registerUser(@RequestBody RegistrationDTO body) {
-        return authenticationService.registerUser(body.getUsername(), body.getPassword());
-    }
+//    public AuthenticationController(RegistrationService authenticationService) {
+//        this.authenticationService = authenticationService;
+//    }
+
+//    @PostMapping("/register")
+//    public UserInfo registerUser(@RequestBody RegistrationDTO body) {
+//        return authenticationService.registerUser(body.getUsername(), body.getPassword());
+//    }
 
 
     @PostMapping("/login")
     public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if(authentication.isAuthenticated()){
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());
             JwtResponseDTO jwtResponseDTO = JwtResponseDTO.builder()
-                    .accessToken(tokenService.GenerateToken(authRequestDTO.getUsername()))
+                    .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()))
                     .token(refreshToken.getToken())
                     .build();
             response.addCookie(cookieUtility.createCookie("accessToken", jwtResponseDTO.getAccessToken(), true));
@@ -71,9 +72,9 @@ public class AuthenticationController {
     public JwtResponseDTO refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO){
         return refreshTokenService.findByToken(refreshTokenRequestDTO.getToken())
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getApplicationUser)
+                .map(RefreshToken::getUserInfo)
                 .map(userInfo -> {
-                    String accessToken = tokenService.GenerateToken(userInfo.getUsername());
+                    String accessToken = jwtService.GenerateToken(userInfo.getUsername());
                     return JwtResponseDTO.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequestDTO.getToken()).build();
