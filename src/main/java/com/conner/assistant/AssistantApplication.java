@@ -3,8 +3,8 @@ package com.conner.assistant;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.conner.assistant.models.UserInfo;
-import com.conner.assistant.models.UserRole;
+import com.conner.assistant.models.ApplicationUser;
+import com.conner.assistant.models.Role;
 import com.conner.assistant.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,26 +24,24 @@ public class AssistantApplication {
     @Bean
     CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
+            if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
 
-            if (roleRepository.findByAuthority("ADMIN").isPresent()) {
-                return;
-            }
+            Role adminRole = roleRepository.save(new Role("ADMIN"));
+            Role userRole = roleRepository.save(new Role("USER"));
 
-            UserRole adminRole = new UserRole("ADMIN");
-            UserRole userRole = new UserRole("USER");
+            Set<Role> setAdmin = new HashSet<>();
+            Set<Role> setUser = new HashSet<>();
 
-            roleRepository.save(adminRole);
-            roleRepository.save(userRole);
+            setAdmin.add(adminRole);
+            setUser.add(userRole);
 
-            Set<UserRole> admin = new HashSet<>();
-            admin.add(adminRole);
-            Set<UserRole> user = new HashSet<>();
-            user.add(userRole);
+            ApplicationUser admin = new ApplicationUser(
+                    1L, "admin", passwordEncoder.encode("password"), setAdmin);
+            ApplicationUser user = new ApplicationUser(
+                    2L, "user", passwordEncoder.encode("password"), setUser);
 
-            userRepository.save(new UserInfo(
-                    1L, "admin", passwordEncoder.encode("password"), admin));
-            userRepository.save( new UserInfo(
-                    2L, "user", passwordEncoder.encode("password"), user));
+            userRepository.save(admin);
+            userRepository.save(user);
         };
     }
 }
