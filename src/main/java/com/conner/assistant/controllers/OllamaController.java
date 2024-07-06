@@ -38,13 +38,15 @@ public class OllamaController {
     @Autowired
     RefreshTokenRepository refreshTokenRepository;
 
-    //TODO error handling set response entity change axios in front end to retrieve refresh token
+    //TODO split method into token checkers
     @GetMapping("/generateLlama3")
     public String generate(@RequestParam String prompt, HttpServletRequest request) {
         try {
             Cookie[] cookies = request.getCookies();
             RefreshToken refreshToken = refreshTokenRepository.findByToken(cookies[1].getValue()).orElseThrow();
             refreshTokenService.verifyExpiration(refreshToken);
+            String username = tokenService.extractUsername(cookies[0].getValue());
+            tokenService.validateToken(cookies[0].getValue(), userRepository.findByUsername(username));
             return chatModel
                     .call(ollamaService.generateLlama(prompt))
                     .getResult()
