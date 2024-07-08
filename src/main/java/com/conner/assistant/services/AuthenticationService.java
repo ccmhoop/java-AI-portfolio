@@ -77,10 +77,7 @@ public class AuthenticationService {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("token")){
                         String value = cookie.getValue();
-                        RefreshToken check = refreshTokenService.verifyExpiration(refreshTokenService.findByToken(value).get());
-                        if (check.getApplicationUser().getUsername().equals(username)){
-                            System.out.println("Yes it does");
-                        }
+                        refreshTokenService.verifyExpiration(refreshTokenService.findByToken(value).get());
                     }
                 }
                 }else{

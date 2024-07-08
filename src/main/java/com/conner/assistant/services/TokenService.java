@@ -1,6 +1,7 @@
 package com.conner.assistant.services;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class TokenService {
                 .issuedAt(now)
                 .subject(auth.getName())
                 .claim("roles", scope)
+                .expiresAt(new Date(System.currentTimeMillis()+1000*60*30).toInstant())
                 .build();
         System.out.println(claims);
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
