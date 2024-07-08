@@ -6,6 +6,7 @@ import com.conner.assistant.dto.RegistrationDTO;
 import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
-        return authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword(), response);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest, HttpServletRequest request, HttpServletResponse response) {
+        return authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword(), request, response);
     }
 }
 

@@ -6,10 +6,13 @@ import java.util.Optional;
 
 import com.conner.assistant.dto.LoginResponseDTO;
 import com.conner.assistant.models.ApplicationUser;
+import com.conner.assistant.models.RefreshToken;
 import com.conner.assistant.models.Role;
 import com.conner.assistant.repository.RoleRepository;
 import com.conner.assistant.repository.UserRepository;
+import com.conner.assistant.utils.CookieUtility;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,10 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+    @Autowired
+    private CookieUtility cookieUtils;
 
     /**
      * Registers a new user with the given username and password.
@@ -60,12 +67,28 @@ public class AuthenticationService {
      * @param response the HttpServletResponse object used to set cookies
      * @return a ResponseEntity object with the login response or an Unauthorized status if authentication fails
      */
-    public ResponseEntity<LoginResponseDTO> loginUser(String username, String password, HttpServletResponse response) {
+    public ResponseEntity<LoginResponseDTO> loginUser(String username, String password, HttpServletRequest request, HttpServletResponse response) {
         try {
             Authentication auth = authenticateUser(username, password);
-            String token = tokenService.generateJwt(auth);
-            addUserCookies(response, token, username);
-            LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+            String jwt = tokenService.generateJwt(auth);
+            //basic remember me, not yet represented in frontend. split up method
+            if (request.getCookies() != null){
+                Cookie[] cookies = request.getCookies();
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("token")){
+                        String value = cookie.getValue();
+                        RefreshToken check = refreshTokenService.verifyExpiration(refreshTokenService.findByToken(value).get());
+                        if (check.getApplicationUser().getUsername().equals(username)){
+                            System.out.println("Yes it does");
+                        }
+                    }
+                }
+                }else{
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+                response.addCookie(cookieUtils.createCookie("token", refreshToken.getToken(), true));
+            }
+            LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).get(), jwt);
+            response.addCookie(cookieUtils.createCookie("accessToken", jwt, true));
             return ResponseEntity.ok(login);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -81,18 +104,5 @@ public class AuthenticationService {
         return role.orElseThrow(() -> new IllegalArgumentException("Role not found: " + authority));
     }
 
-    private void addUserCookies(HttpServletResponse response, String token, String username) {
-        response.addCookie(createCookie("jwt", token, true));
-        response.addCookie(createCookie("username", username, false));
-    }
-
-    private Cookie createCookie(String name, String value, boolean httpOnly) {
-        Cookie cookie = new Cookie(name, value);
-
-        cookie.setHttpOnly(httpOnly);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        return cookie;
-    }
 
 }
