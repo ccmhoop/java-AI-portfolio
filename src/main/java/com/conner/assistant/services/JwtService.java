@@ -76,7 +76,6 @@ public class JwtService {
 
             // Verifies token
             if (!signedJWT.verify(verifier)) {
-                System.out.println("JWT verification failed");
                 throw new JwtException("JWT verification failed");
             }
 
@@ -85,7 +84,6 @@ public class JwtService {
 
             //Checks Expiration Time
             if (claims.getExpirationTime().before(Date.from(now))) {
-                System.out.println("JWT expired");
                 throw new JwtException("JWT expired");
             }
 
