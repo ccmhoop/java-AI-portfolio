@@ -118,5 +118,4 @@ public class AuthenticationService {
         return role.orElseThrow(() -> new IllegalArgumentException("Role not found: " + authority));
     }
 
-
 }

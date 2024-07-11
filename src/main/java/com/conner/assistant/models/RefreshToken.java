@@ -21,6 +21,7 @@ public class RefreshToken {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private ApplicationUser applicationUser;
+
 }
 
 

@@ -31,5 +31,5 @@ public class TextNormalizer {
         }
         return Optional.of(buildText.toString());
     }
-}
 
+}

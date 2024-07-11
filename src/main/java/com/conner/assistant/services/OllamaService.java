@@ -29,4 +29,5 @@ public class OllamaService {
                         .withModel("llama3")
         );
     }
+
 }

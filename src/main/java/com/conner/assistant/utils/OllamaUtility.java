@@ -30,7 +30,7 @@ public class OllamaUtility {
                 "<|start_header_id|>response<|end_header_id|>";
     }
 
-    //Adapt code when needed split method
+    //Adapt code when needed or split method
     private String generateContext(String prompt) {
         StringBuilder contextStringBuilder = new StringBuilder();
 

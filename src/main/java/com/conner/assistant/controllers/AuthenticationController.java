@@ -35,6 +35,7 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest, HttpServletRequest request, HttpServletResponse response) {
         return authenticationService.loginUser(loginRequest.getUsername(), loginRequest.getPassword(), request, response);
     }
+
 }
 
 
