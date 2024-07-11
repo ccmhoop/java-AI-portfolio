@@ -1,76 +1,97 @@
 package com.conner.assistant.services;
 
-import java.security.Key;
+import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.cglib.core.internal.Function;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import com.conner.assistant.utils.RSAKeyProperties;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class JwtService {
 
-    public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
+    @Autowired
+    private JwtEncoder jwtEncoder;
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    @Autowired
+    private JwtDecoder jwtDecoder;
+
+    private final RSAPublicKey publicKey;
+
+    @Autowired
+    public JwtService(RSAKeyProperties rsaKeyProperties) {
+        this.publicKey = rsaKeyProperties.getPublicKey();
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    /**
+     * Generates a JSON Web Token (JWT) using the provided authentication information.
+     *
+     * @param auth the authentication details
+     * @return the generated JWT
+     */
+    public String generateJwt(Authentication auth) {
+
+        Instant now = Instant.now();
+
+        String scope = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .subject(auth.getName())
+                .claim("roles", scope)
+                .expiresAt(now.plusMillis(15000))
+                .build();
+        System.out.println(claims);
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+    /**
+     * TODO Add Proper return types
+     * Verifies the validity of a JSON Web Token (JWT) with the provided token.
+     *
+     * @param token the JWT token to verify
+     * @return The username if the token is valid and not expired; null otherwise
+     */
+    public String JwtVerifyUser(String token) {
+        try {
+            Instant now = Instant.now();
+            // Parse token
+            SignedJWT signedJWT = SignedJWT.parse(token);
 
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+            // Creates RSA verifier
+            RSASSAVerifier verifier = new RSASSAVerifier(publicKey);
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+            // Verifies token
+            if (!signedJWT.verify(verifier)) {
+                System.out.println("JWT verification failed");
+                throw new JwtException("JWT verification failed");
+            }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
+            // Retrieves JWTClaimSet
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
 
+            //Checks Expiration Time
+            if (claims.getExpirationTime().before(Date.from(now))) {
+                System.out.println("JWT expired");
+                throw new JwtException("JWT expired");
+            }
 
-
-    public String GenerateToken(String username){
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
-    }
-
-
-
-    private String createToken(Map<String, Object> claims, String username) {
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-    }
-
-    private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
-        return Keys.hmacShaKeyFor(keyBytes);
+            return claims.getStringClaim("sub");
+        } catch (ParseException | JOSEException  | JwtException e) {
+            return null;
+        }
     }
 }

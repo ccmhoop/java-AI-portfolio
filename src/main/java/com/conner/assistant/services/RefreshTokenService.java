@@ -21,21 +21,28 @@ public class RefreshTokenService {
 
     public RefreshToken createRefreshToken(String username){
         RefreshToken refreshToken = RefreshToken.builder()
-                .applicationUser(userRepository.findByUsername(username).get())
+                .applicationUser(userRepository.findByUsername(username).orElseThrow())
                 .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(3000)) // set expiry of refresh token to 10 minutes - you can configure it application.properties file
+                // set expiry of refresh token in milliseconds
+                .expiryDate(Instant.now().plusMillis(30000))
                 .build();
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public Optional<RefreshToken> findByToken(String token){
-        return refreshTokenRepository.findByToken(token);
+    public Optional<RefreshToken> findByToken(String refreshToken){
+        return refreshTokenRepository.findByToken(refreshToken);
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token){
+    public String refreshTokenVerifyUser(String refreshToken){
+        RefreshToken token = verifyRefreshToken(refreshToken);
+        return token.getApplicationUser().getUsername();
+    }
+
+    public RefreshToken verifyRefreshToken(String refreshToken){
+        RefreshToken token = findByToken(refreshToken).orElseThrow();
         if(token.getExpiryDate().compareTo(Instant.now())<0){
             refreshTokenRepository.delete(token);
-            throw new RuntimeException(token.getToken() + " Refresh token is expired. Please make a new login..!");
+            throw new RuntimeException("Refresh token is expired or not valid. Please make a new login..!");
         }
         return token;
     }

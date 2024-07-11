@@ -38,11 +38,13 @@ public class AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private TokenService tokenService;
+    private JwtService jwtService;
     @Autowired
     private RefreshTokenService refreshTokenService;
     @Autowired
     private CookieUtility cookieUtils;
+    @Autowired
+    private CookieUtility cookieUtility;
 
     /**
      * Registers a new user with the given username and password.
@@ -60,6 +62,7 @@ public class AuthenticationService {
     }
 
     /**
+     * TODO Split up in the separate Login Methods based on Refresh Token or Manual Login
      * Logs in the user with the given username and password.
      *
      * @param username the username of the user
@@ -70,26 +73,40 @@ public class AuthenticationService {
     public ResponseEntity<LoginResponseDTO> loginUser(String username, String password, HttpServletRequest request, HttpServletResponse response) {
         try {
             Authentication auth = authenticateUser(username, password);
-            String jwt = tokenService.generateJwt(auth);
-            //basic remember me, not yet represented in frontend. split up method
+            String jwt = jwtService.generateJwt(auth);
+
+            //basic remember me, not yet represented in frontend. split up method rework needed(bad code), use cookies utils
             if (request.getCookies() != null){
                 Cookie[] cookies = request.getCookies();
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("token")){
+                    if (cookie.getName().equals("refreshToken")){
                         String value = cookie.getValue();
-                        refreshTokenService.verifyExpiration(refreshTokenService.findByToken(value).get());
+                        refreshTokenService.verifyRefreshToken(value);
                     }
                 }
-                }else{
+            }else{
                 RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
                 response.addCookie(cookieUtils.refreshTokenCookie(refreshToken.getToken()));
             }
-            LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).get(), jwt);
+
+            LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(), jwt);
             response.addCookie(cookieUtils.jwtCookie(jwt));
             return ResponseEntity.ok(login);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+    }
+
+    /**
+     * Verifies the access token and refresh token in the request.
+     *
+     * @param request the HttpServletRequest object containing the cookies
+     * @return true if the access token and refresh token are valid and belong to the same user; false otherwise
+     */
+    public boolean verifyTokens(HttpServletRequest request) {
+        String refreshToken = cookieUtility.getCookieValue(request,"refreshToken");
+        String jwt = cookieUtility.getCookieValue(request,"accessToken");
+        return jwtService.JwtVerifyUser(jwt).equals(refreshTokenService.refreshTokenVerifyUser(refreshToken));
     }
 
     private Authentication authenticateUser(String username, String password) {

@@ -1,14 +1,7 @@
 package com.conner.assistant.controllers;
 
-import com.conner.assistant.models.RefreshToken;
-import com.conner.assistant.repository.RefreshTokenRepository;
-import com.conner.assistant.services.RefreshTokenService;
-import com.conner.assistant.services.OllamaService;
-import com.conner.assistant.services.JwtService;
-import com.conner.assistant.services.UserService;
-import jakarta.servlet.http.Cookie;
+import com.conner.assistant.services.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.catalina.User;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -26,31 +19,20 @@ public class OllamaController {
     @Autowired
     private OllamaService ollamaService;
     @Autowired
-    private JwtService tokenService;
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    private AuthenticationService authenticationService;
+
 
     //TODO split method into token checkers
     @GetMapping("/generateLlama3")
     public String generate(@RequestParam String prompt, HttpServletRequest request) {
-        try {
-            Cookie[] cookies = request.getCookies();
-            RefreshToken refreshToken = refreshTokenRepository.findByToken(cookies[1].getValue()).orElseThrow();
-            refreshTokenService.verifyExpiration(refreshToken);
-            String username = tokenService.extractUsername(cookies[0].getValue());
-            tokenService.validateToken(cookies[0].getValue(), userService.loadUserByUsername(username));
+            if (!authenticationService.verifyTokens(request)){
+                return "Invalid Token";
+            }
             return chatModel
                     .call(ollamaService.generateLlama(prompt))
                     .getResult()
                     .getOutput()
                     .getContent();
-        }catch (Exception e) {
-            return "No AI subscription found";
-        }
     }
 
     @GetMapping("/generateStream")
