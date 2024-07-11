@@ -54,7 +54,7 @@ public class JwtService {
                 .claim("roles", scope)
                 .expiresAt(now.plusMillis(15000))
                 .build();
-        System.out.println(claims);
+
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
@@ -76,7 +76,7 @@ public class JwtService {
 
             // Verifies token
             if (!signedJWT.verify(verifier)) {
-                throw new JwtException("JWT verification failed");
+                throw new JOSEException("JWT verification failed");
             }
 
             // Retrieves JWTClaimSet
@@ -84,11 +84,11 @@ public class JwtService {
 
             //Checks Expiration Time
             if (claims.getExpirationTime().before(Date.from(now))) {
-                throw new JwtException("JWT expired");
+                throw new JOSEException("JWT expired");
             }
 
             return claims.getStringClaim("sub");
-        } catch (ParseException | JOSEException  | JwtException e) {
+        } catch (ParseException | JOSEException e) {
             System.out.println(e.getMessage());
             return null;
         }
