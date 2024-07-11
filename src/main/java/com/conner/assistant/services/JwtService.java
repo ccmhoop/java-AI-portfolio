@@ -89,6 +89,7 @@ public class JwtService {
 
             return claims.getStringClaim("sub");
         } catch (ParseException | JOSEException  | JwtException e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }
