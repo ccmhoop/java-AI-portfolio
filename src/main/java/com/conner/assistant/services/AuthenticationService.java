@@ -82,10 +82,10 @@ public class AuthenticationService {
                 }
                 }else{
                 RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
-                response.addCookie(cookieUtils.createCookie("token", refreshToken.getToken(), true));
+                response.addCookie(cookieUtils.refreshTokenCookie(refreshToken.getToken()));
             }
             LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).get(), jwt);
-            response.addCookie(cookieUtils.createCookie("accessToken", jwt, true));
+            response.addCookie(cookieUtils.jwtCookie(jwt));
             return ResponseEntity.ok(login);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
