@@ -8,6 +8,7 @@ import com.conner.assistant.dto.LoginResponseDTO;
 import com.conner.assistant.models.ApplicationUser;
 import com.conner.assistant.models.RefreshToken;
 import com.conner.assistant.models.Role;
+import com.conner.assistant.repository.RefreshTokenRepository;
 import com.conner.assistant.repository.RoleRepository;
 import com.conner.assistant.repository.UserRepository;
 import com.conner.assistant.utils.CookieUtility;
@@ -22,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +44,9 @@ public class AuthenticationService {
     @Autowired
     private RefreshTokenService refreshTokenService;
     @Autowired
-    private CookieUtility cookieUtils;
-    @Autowired
     private CookieUtility cookieUtility;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     /**
      * Registers a new user with the given username and password.
@@ -75,22 +77,23 @@ public class AuthenticationService {
             Authentication auth = authenticateUser(username, password);
             String jwt = jwtService.generateJwt(auth);
 
-            //basic remember me, not yet represented in frontend. split up method rework needed(bad code), use cookies utils
-            if (request.getCookies() != null){
-                Cookie[] cookies = request.getCookies();
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("refreshToken")){
-                        String value = cookie.getValue();
-                        refreshTokenService.verifyRefreshToken(value);
-                    }
+
+            //basic remember me Method. Todo optimize and separate into its own method
+            String refreshTokenValue = cookieUtility.getCookieValue(request, "refreshToken");
+            RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
+
+            ApplicationUser applicationUser = userRepository.findByUsername(username).orElseThrow();
+
+            if (refreshToken == null || !refreshToken.getApplicationUser().getUsername().equals(username)) {
+                refreshToken = refreshTokenRepository.findByApplicationUser(applicationUser).orElse(null);
+                if (refreshToken == null) {
+                    refreshToken = refreshTokenService.createRefreshToken(username);
                 }
-            }else{
-                RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
-                response.addCookie(cookieUtils.refreshTokenCookie(refreshToken.getToken()));
             }
+            response.addCookie(cookieUtility.refreshTokenCookie(refreshToken.getToken()));
 
             LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(), jwt);
-            response.addCookie(cookieUtils.jwtCookie(jwt));
+            response.addCookie(cookieUtility.jwtCookie(jwt));
             return ResponseEntity.ok(login);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

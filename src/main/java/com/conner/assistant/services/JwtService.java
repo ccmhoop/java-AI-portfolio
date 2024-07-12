@@ -28,6 +28,8 @@ public class JwtService {
 
     private final RSAPublicKey publicKey;
 
+    private final Instant now = Instant.now();
+
     @Autowired
     public JwtService(RSAKeyProperties rsaKeyProperties) {
         this.publicKey = rsaKeyProperties.getPublicKey();
@@ -41,8 +43,6 @@ public class JwtService {
      */
     public String generateJwt(Authentication auth) {
 
-        Instant now = Instant.now();
-
         String scope = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
@@ -52,7 +52,7 @@ public class JwtService {
                 .issuedAt(now)
                 .subject(auth.getName())
                 .claim("roles", scope)
-                .expiresAt(now.plusMillis(15000))
+                .expiresAt(now.plusSeconds(60 * 30))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -67,7 +67,6 @@ public class JwtService {
      */
     public String JwtVerifyUser(String token) {
         try {
-            Instant now = Instant.now();
             // Parse token
             SignedJWT signedJWT = SignedJWT.parse(token);
 

@@ -25,14 +25,16 @@ public class OllamaController {
     //TODO split method into token checkers
     @GetMapping("/generateLlama3")
     public String generate(@RequestParam String prompt, HttpServletRequest request) {
-            if (!authenticationService.verifyTokens(request)){
-                return "Invalid Token";
-            }
-            return chatModel
-                    .call(ollamaService.generateLlama(prompt))
-                    .getResult()
-                    .getOutput()
-                    .getContent();
+
+        if (!authenticationService.verifyTokens(request)){
+            return "Invalid Token";
+        }
+
+        return chatModel
+                .call(ollamaService.generateLlama(prompt))
+                .getResult()
+                .getOutput()
+                .getContent();
     }
 
     @GetMapping("/generateStream")

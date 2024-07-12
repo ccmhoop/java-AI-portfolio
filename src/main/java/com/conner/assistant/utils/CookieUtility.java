@@ -15,7 +15,7 @@ public class CookieUtility {
         cookie.setAttribute("SameSite","Strict");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(15);
+        cookie.setMaxAge(60*30);
         cookie.setPath("/");
         return cookie;
     }
@@ -25,7 +25,7 @@ public class CookieUtility {
         cookie.setAttribute("SameSite","Strict");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(30);
+        cookie.setMaxAge(60*60);
         cookie.setPath("/");
         return cookie;
     }
@@ -39,11 +39,14 @@ public class CookieUtility {
      * @return the value of the specified cookie, or null if the cookie does not exist
      */
     public String getCookieValue(HttpServletRequest request, String cookieName) {
-        return Arrays.stream(request.getCookies())
-                .filter(c -> c.getName().equals(cookieName))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);
-    }
+        if (request.getCookies() != null) {
+            return Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals(cookieName))
+                    .findFirst()
+                    .map(Cookie::getValue)
+                    .orElse(null);
 
+        }
+        return null;
+    }
 }
