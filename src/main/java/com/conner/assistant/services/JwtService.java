@@ -20,18 +20,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
 
-    @Autowired
-    private JwtEncoder jwtEncoder;
-
-    @Autowired
-    private JwtDecoder jwtDecoder;
-
+    private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
     private final RSAPublicKey publicKey;
-
     private final Instant now = Instant.now();
 
     @Autowired
-    public JwtService(RSAKeyProperties rsaKeyProperties) {
+    public JwtService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, RSAKeyProperties rsaKeyProperties) {
+        this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
         this.publicKey = rsaKeyProperties.getPublicKey();
     }
 
@@ -71,25 +68,33 @@ public class JwtService {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
             // Creates RSA verifier
-            RSASSAVerifier verifier = new RSASSAVerifier(publicKey);
-
-            // Verifies token
-            if (!signedJWT.verify(verifier)) {
-                throw new JOSEException("JWT verification failed");
-            }
+            jwtVerifyToken(signedJWT);
 
             // Retrieves JWTClaimSet
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
 
             //Checks Expiration Time
-            if (claims.getExpirationTime().before(Date.from(now))) {
-                throw new JOSEException("JWT expired");
-            }
+            jwtVerifyExpiration(claims);
 
             return claims.getStringClaim("sub");
         } catch (ParseException | JOSEException e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    private void jwtVerifyExpiration(JWTClaimsSet claims) throws JOSEException {
+        if (claims.getExpirationTime().before(Date.from(now))) {
+            throw new JOSEException("JWT expired");
+        }
+    }
+
+    private void jwtVerifyToken(SignedJWT signedJWT) throws JOSEException {
+        RSASSAVerifier verifier = new RSASSAVerifier(publicKey);
+
+        // Verifies token
+        if (!signedJWT.verify(verifier)) {
+            throw new JOSEException("JWT verification failed");
         }
     }
 
