@@ -3,9 +3,9 @@ package com.conner.assistant;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.conner.assistant.models.ApplicationUser;
-import com.conner.assistant.models.Role;
-import com.conner.assistant.repository.RoleRepository;
+import com.conner.assistant.applicationUser.ApplicationUser;
+import com.conner.assistant.applicationUser.Role;
+import com.conner.assistant.applicationUser.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.conner.assistant.repository.UserRepository;
+import com.conner.assistant.applicationUser.UserRepository;
 
 @EnableScheduling
 @SpringBootApplication

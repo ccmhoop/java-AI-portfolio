@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {axiosPostLogin} from "../helpers/axiosPresets.js";
+import {axiosPostLogin, axiosPostTestRag} from "../helpers/axiosPresets.js";
 
 export default function LoginComponent() {
     const [loginFormData, setLoginFormData] = useState({
@@ -17,6 +17,7 @@ export default function LoginComponent() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            await axiosPostTestRag();
             await axiosPostLogin({
                 "username": loginFormData.username,
                 "password": loginFormData.password

@@ -10,8 +10,11 @@ const config = {
     ollama: {
         maxBodyLength: Infinity,
         withCredentials: true,
-    }
+    },
 }
+
+const axiosPostTestRag = async () => await axios
+    .post('http://localhost:8080/rag/embedDocument');
 
 const axiosPostLogin = async (loginFormData) => await axios
     .post('http://localhost:8080/auth/login', loginFormData, config.login);
@@ -19,4 +22,4 @@ const axiosPostLogin = async (loginFormData) => await axios
 const axiosGetOllama = async (prompt) => await axios
     .get(`http://localhost:8080/ai/generateLlama3?prompt=${prompt}`, config.ollama);
 
-export {axiosGetOllama, axiosPostLogin}
+export {axiosGetOllama, axiosPostLogin, axiosPostTestRag}
