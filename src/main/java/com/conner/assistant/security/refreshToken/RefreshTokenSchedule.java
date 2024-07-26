@@ -13,7 +13,7 @@ import java.util.List;
 public class RefreshTokenSchedule {
 
      @Autowired
-     RefreshTokenRepository refreshTokenRepository;
+     private RefreshTokenRepository refreshTokenRepository;
 
     /**
      * This method is used to print and delete the refresh tokens that have expired.

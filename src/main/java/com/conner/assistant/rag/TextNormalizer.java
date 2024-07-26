@@ -7,9 +7,8 @@ import java.util.Optional;
 
 public class TextNormalizer {
 
-
-    //TODO make it work with PDF and MD etc.
     /**
+     * TODO make it work with PDF and MD etc.
      * Removes empty spaces from a text file.
      *
      * @param filePath The path of the text file to be processed.

@@ -31,7 +31,6 @@ public class CookieUtility {
     }
 
     /**
-     * TODO Error Handling when cookie == null "shouldn't be triggered if not logged in"
      * Returns the value of the specified cookie name from the given HttpServletRequest.
      *
      * @param request the HttpServletRequest object containing the cookies

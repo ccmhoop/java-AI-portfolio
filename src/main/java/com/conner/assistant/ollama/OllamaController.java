@@ -1,7 +1,5 @@
 package com.conner.assistant.ollama;
 
-import com.conner.assistant.security.AuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,16 +7,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/ai")
 public class OllamaController {
 
-
     @Autowired
     private OllamaService ollamaService;
-    @Autowired
-    private AuthenticationService authenticationService;
-
 
     //TODO split method into token checkers
     @GetMapping("/generateLlama3")
-    public String generate(@RequestParam String prompt, HttpServletRequest request) {
+    public String generate(@RequestParam String prompt) {
         return ollamaService.generateLlama(prompt);
     }
 
