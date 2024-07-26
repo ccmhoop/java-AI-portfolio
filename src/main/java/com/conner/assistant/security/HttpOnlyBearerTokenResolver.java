@@ -1,20 +1,13 @@
 package com.conner.assistant.security;
 
-
-import com.conner.assistant.applicationUser.ApplicationUser;
-import com.conner.assistant.security.jwt.JwtService;
 import com.conner.assistant.security.jwt.RSAKeyProperties;
 import com.conner.assistant.security.refreshToken.RefreshToken;
-import com.conner.assistant.security.refreshToken.RefreshTokenRepository;
 import com.conner.assistant.security.refreshToken.RefreshTokenService;
-import com.conner.assistant.utils.Result;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Component;
@@ -26,18 +19,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
-
 @Component
 public class HttpOnlyBearerTokenResolver implements BearerTokenResolver {
 
-
     private final RefreshTokenService refreshTokenService;
-
     private final RSAPublicKey publicKey;
-
     private final Instant now = Instant.now();
 
-    @Autowired
     public HttpOnlyBearerTokenResolver(RSAKeyProperties rsaKeyProperties, RefreshTokenService refreshTokenService) {
         this.publicKey = rsaKeyProperties.getPublicKey();
         this.refreshTokenService = refreshTokenService;
@@ -68,20 +56,17 @@ public class HttpOnlyBearerTokenResolver implements BearerTokenResolver {
     }
 
     private String jwtVerifyUser(HttpServletRequest request) {
-        String token = Objects.requireNonNull(WebUtils.getCookie(request, "accessToken")).getValue();
         try {
+            String token = Objects.requireNonNull(WebUtils.getCookie(request, "accessToken")).getValue();
             // Parse token
             SignedJWT signedJWT = SignedJWT.parse(token);
-
             // Creates RSA verifier
             jwtVerifyToken(signedJWT);
-
             // Retrieves JWTClaimSet
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-
             //Checks Expiration Time
             jwtVerifyExpiration(claims);
-
+            //Returns username
             return claims.getStringClaim("sub");
         } catch (ParseException | JOSEException e) {
             System.out.println(e.getMessage());
