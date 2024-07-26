@@ -77,7 +77,7 @@ public class AuthenticationService {
             String jwt = jwtService.generateJwt(auth);
 
 
-            //basic remember me Method. Todo optimize and separate into its own method
+            //TODO Rework in HttpOnlyBearerTokenResolver class?
             String refreshTokenValue = cookieUtility.getCookieValue(request, "refreshToken");
             RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
 

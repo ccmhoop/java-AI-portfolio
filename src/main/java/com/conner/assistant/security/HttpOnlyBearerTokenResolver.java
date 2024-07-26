@@ -1,21 +1,22 @@
 package com.conner.assistant.security;
 
 import com.conner.assistant.security.jwt.RSAKeyProperties;
-import com.conner.assistant.security.refreshToken.RefreshToken;
 import com.conner.assistant.security.refreshToken.RefreshTokenService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
@@ -37,29 +38,42 @@ public class HttpOnlyBearerTokenResolver implements BearerTokenResolver {
      */
     @Override
     public String resolve(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            System.out.println("hallo");
-            if (jwtVerifyUser(request).equals(refreshTokenUser(request))) {
-                return WebUtils.getCookie(request, "accessToken").getValue();
-            }
+        String accessToken = getCookieValue(request, "accessToken");
+        String refreshToken = getCookieValue(request, "refreshToken");
+        if (accessToken != null && refreshToken != null) {
+            return resolveTokens(accessToken, refreshToken);
         }
         return new DefaultBearerTokenResolver().resolve(request);
     }
 
-    private String refreshTokenUser(HttpServletRequest request) {
-        String refreshTokenKey = Objects.requireNonNull(WebUtils.getCookie(request, "refreshToken")).getValue();
-        if (!refreshTokenKey.isEmpty()) {
-            RefreshToken token = refreshTokenService.verifyRefreshToken(refreshTokenKey);
-            return token.getApplicationUser().getUsername();
+    //TODO add separate Refresh token Logic
+    private String resolveTokens(String accessToken, String refreshToken) {
+        if (Objects.equals(getJwtUser(accessToken), getRefreshTokenUser(refreshToken))) {
+            return accessToken;
         }
-        throw new RuntimeException("refresh token not found");
+        throw new BadCredentialsException("Invalid Credentials");
     }
 
-    private String jwtVerifyUser(HttpServletRequest request) {
+    //Duplicate method in CookieUtility
+    private String getCookieValue(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() != null) {
+            return Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals(cookieName))
+                    .findFirst()
+                    .map(Cookie::getValue)
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private String getRefreshTokenUser(String refreshToken) {
+        return refreshTokenService.verifyRefreshToken(refreshToken).getApplicationUser().getUsername();
+    }
+
+    private String getJwtUser(String accessToken) {
         try {
-            String token = Objects.requireNonNull(WebUtils.getCookie(request, "accessToken")).getValue();
             // Parse token
-            SignedJWT signedJWT = SignedJWT.parse(token);
+            SignedJWT signedJWT = SignedJWT.parse(accessToken);
             // Creates RSA verifier
             jwtVerifyToken(signedJWT);
             // Retrieves JWTClaimSet

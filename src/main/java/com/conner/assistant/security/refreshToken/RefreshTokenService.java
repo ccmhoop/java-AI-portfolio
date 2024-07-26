@@ -12,10 +12,10 @@ import java.util.UUID;
 public class RefreshTokenService {
 
     @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     public RefreshToken createRefreshToken(String username){
         RefreshToken refreshToken = RefreshToken.builder()
@@ -28,11 +28,6 @@ public class RefreshTokenService {
 
     public Optional<RefreshToken> findByToken(String refreshToken){
         return refreshTokenRepository.findByToken(refreshToken);
-    }
-
-    public String refreshTokenVerifyUser(String refreshToken){
-        RefreshToken token = verifyRefreshToken(refreshToken);
-        return token.getApplicationUser().getUsername();
     }
 
     public RefreshToken verifyRefreshToken(String refreshToken){
