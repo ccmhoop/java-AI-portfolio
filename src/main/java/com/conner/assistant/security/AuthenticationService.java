@@ -99,18 +99,6 @@ public class AuthenticationService {
         }
     }
 
-    /**
-     * Verifies the access token and refresh token in the request.
-     *
-     * @param request the HttpServletRequest object containing the cookies
-     * @return true if the access token and refresh token are valid and belong to the same user; false otherwise
-     */
-    public boolean verifyTokens(HttpServletRequest request) {
-        String refreshToken = cookieUtility.getCookieValue(request,"refreshToken");
-        String jwt = cookieUtility.getCookieValue(request,"accessToken");
-        return jwtService.JwtVerifyUser(jwt).equals(refreshTokenService.refreshTokenVerifyUser(refreshToken));
-    }
-
     private Authentication authenticateUser(String username, String password) {
         return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }

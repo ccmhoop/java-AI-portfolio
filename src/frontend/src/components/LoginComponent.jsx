@@ -17,7 +17,7 @@ export default function LoginComponent() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axiosPostTestRag();
+            // await axiosPostTestRag();
             await axiosPostLogin({
                 "username": loginFormData.username,
                 "password": loginFormData.password
