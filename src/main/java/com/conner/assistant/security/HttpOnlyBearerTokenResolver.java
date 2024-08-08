@@ -57,7 +57,6 @@ public class HttpOnlyBearerTokenResolver implements BearerTokenResolver {
         throw new BadCredentialsException("Invalid Credentials");
     }
 
-    //Duplicate method in CookieUtility
     private String getCookieValue(HttpServletRequest request, String cookieName) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())

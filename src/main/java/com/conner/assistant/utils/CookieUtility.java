@@ -1,10 +1,7 @@
 package com.conner.assistant.utils;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 @Component
 public class CookieUtility {
@@ -28,25 +25,6 @@ public class CookieUtility {
         cookie.setMaxAge(60*60);
         cookie.setPath("/");
         return cookie;
-    }
-
-    /**
-     * Returns the value of the specified cookie name from the given HttpServletRequest.
-     *
-     * @param request the HttpServletRequest object containing the cookies
-     * @param cookieName the name of the cookie to retrieve
-     * @return the value of the specified cookie, or null if the cookie does not exist
-     */
-    public String getCookieValue(HttpServletRequest request, String cookieName) {
-        if (request.getCookies() != null) {
-            return Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals(cookieName))
-                    .findFirst()
-                    .map(Cookie::getValue)
-                    .orElse(null);
-
-        }
-        return null;
     }
 
 }

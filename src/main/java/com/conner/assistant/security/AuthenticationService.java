@@ -10,7 +10,6 @@ import com.conner.assistant.applicationUser.RoleRepository;
 import com.conner.assistant.applicationUser.UserRepository;
 import com.conner.assistant.security.jwt.JwtService;
 import com.conner.assistant.security.refreshToken.RefreshToken;
-import com.conner.assistant.security.refreshToken.RefreshTokenRepository;
 import com.conner.assistant.security.refreshToken.RefreshTokenService;
 import com.conner.assistant.utils.CookieUtility;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +43,6 @@ public class AuthenticationService {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private CookieUtility cookieUtility;
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
 
     /**
      * Registers a new user with the given username and password.
