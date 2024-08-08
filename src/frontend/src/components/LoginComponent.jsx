@@ -1,40 +1,47 @@
-import { useState } from 'react';
-import axios from 'axios';
+import {useState} from 'react';
+import {axiosPostLogin, axiosPostTestRag} from "../helpers/axiosPresets.js";
 
-function LoginComponent() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+export default function LoginComponent() {
+    const [loginFormData, setLoginFormData] = useState({
+        username: "",
+        password: ""
+    });
 
-    const handleLogin = async (e) => {
+    const handleChange = (e) => {
+        setLoginFormData({
+            ...loginFormData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/auth/login', {
-                username,
-                password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                withCredentials: true
+            // await axiosPostTestRag();
+            await axiosPostLogin({
+                "username": loginFormData.username,
+                "password": loginFormData.password
             });
         } catch (error) {
-            console.error('Error logging in:', error);
+            console.error(error);
         }
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
             <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                name="username"
+                value={loginFormData.username}
+                onChange={handleChange}
                 placeholder="Username"
                 required
             />
             <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                value={loginFormData.password}
+                onChange={handleChange}
                 placeholder="Password"
                 required
             />
@@ -43,4 +50,3 @@ function LoginComponent() {
     );
 }
 
-export default LoginComponent;

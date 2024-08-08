@@ -1,43 +1,40 @@
 import { useState } from 'react';
-import axios from "axios";
+import { axiosGetOllama } from '../helpers/axiosPresets.js';
 
 export default function OllamaChatComponent() {
 
-    const [ prompt, setPrompt] = useState('');
-    const [ aiResponse, setAiResponse ] = useState('');
+    const [ollamaResponse, setOllamaResponse] = useState("");
+    const [prompt, setPrompt] = useState("");
+
+    const handlePromptChange = (e) => {
+        setPrompt(e.target.value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: `http://localhost:8080/ai/generateLlama3?prompt=${prompt}`,
-            headers: { },
-            withCredentials: true,
-        };
-
-        await axios.request(config)
-            .then((response) => {
-                setAiResponse(response.data);
-                setPrompt('')
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        try {
+            const response = await axiosGetOllama(prompt);
+            setOllamaResponse(response.data);
+            setPrompt("");
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    return (<>
-        <textarea readOnly={true} value={aiResponse}></textarea>
-        <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ask LLama3"
-                required
-            />
-            <button type="submit">Submit</button>
-        </form>
+    return (
+        <>
+            <textarea readOnly={true} value={ollamaResponse} />
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    value={prompt}
+                    name="prompt"
+                    onChange={handlePromptChange}
+                    placeholder="Ask LLama3"
+                    required
+                />
+                <button type="submit">Submit</button>
+            </form>
         </>
     );
 }
