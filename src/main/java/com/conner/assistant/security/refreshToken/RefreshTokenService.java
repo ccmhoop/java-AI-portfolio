@@ -30,13 +30,4 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(refreshToken);
     }
 
-    public RefreshToken verifyRefreshToken(String refreshToken){
-        RefreshToken token = findByToken(refreshToken).orElse(null);
-        if(token != null && token.getExpiryDate().compareTo(Instant.now())<0){
-            refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token is expired or not valid. Please make a new login..!");
-        }
-        return token;
-    }
-
 }

@@ -63,7 +63,7 @@ public class AuthenticationService {
     }
 
     /**
-     * TODO Split up in the separate Login Methods based on Refresh Token or Manual Login
+     * TODO logout mhttps://stackoverflow.com/questions/9821919/delete-cookie-from-a-servlet-response
      * Logs in the user with the given username and password.
      *
      * @param username the username of the user
@@ -76,23 +76,13 @@ public class AuthenticationService {
             Authentication auth = authenticateUser(username, password);
             String jwt = jwtService.generateJwt(auth);
 
-
-            //TODO Rework in HttpOnlyBearerTokenResolver class?
-            String refreshTokenValue = cookieUtility.getCookieValue(request, "refreshToken");
-            RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenValue);
-
-            ApplicationUser applicationUser = userRepository.findByUsername(username).orElseThrow();
-
-            if (refreshToken == null || !refreshToken.getApplicationUser().getUsername().equals(username)) {
-                refreshToken = refreshTokenRepository.findByApplicationUser(applicationUser).orElse(null);
-                if (refreshToken == null) {
-                    refreshToken = refreshTokenService.createRefreshToken(username);
-                }
-            }
-            response.addCookie(cookieUtility.refreshTokenCookie(refreshToken.getToken()));
-
             LoginResponseDTO login = new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(), jwt);
             response.addCookie(cookieUtility.jwtCookie(jwt));
+
+            //TODO add refresh token to response on login if not expired
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+            response.addCookie(cookieUtility.refreshTokenCookie(refreshToken.getToken()));
+
             return ResponseEntity.ok(login);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

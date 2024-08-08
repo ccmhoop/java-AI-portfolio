@@ -43,4 +43,5 @@ public class Result<T> {
             super(message);
         }
     }
+
 }

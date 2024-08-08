@@ -17,7 +17,7 @@ public class JwtService {
     private final Instant now = Instant.now();
 
     @Autowired
-    public JwtService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, RSAKeyProperties rsaKeyProperties) {
+    public JwtService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
         this.jwtEncoder = jwtEncoder;
         this.jwtDecoder = jwtDecoder;
     }

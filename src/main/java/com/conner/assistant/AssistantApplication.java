@@ -46,5 +46,5 @@ public class AssistantApplication {
             userRepository.save(user);
         };
     }
-}
 
+}

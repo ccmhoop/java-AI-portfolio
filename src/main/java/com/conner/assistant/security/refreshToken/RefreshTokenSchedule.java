@@ -17,7 +17,6 @@ public class RefreshTokenSchedule {
 
     /**
      * This method is used to print and delete the refresh tokens that have expired.
-     *
      * The refresh tokens are fetched from the RefreshTokenRepository using the method findByExpiryDateBefore().
      * The method then deletes all the fetched refresh tokens using the deleteAll() method of the RefreshTokenRepository.
      * Finally, a log entry is created to indicate the number of refresh tokens deleted.
