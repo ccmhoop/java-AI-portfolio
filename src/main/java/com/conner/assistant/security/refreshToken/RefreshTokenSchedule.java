@@ -21,7 +21,7 @@ public class RefreshTokenSchedule {
      * The method then deletes all the fetched refresh tokens using the deleteAll() method of the RefreshTokenRepository.
      * Finally, a log entry is created to indicate the number of refresh tokens deleted.
      */
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 1000*60*60)
      public void deleteExpiredRefreshTokens() {
         final List<RefreshToken> refreshTokens = refreshTokenRepository.findByExpiryDateBefore(Instant.now());
          refreshTokenRepository.deleteAll(refreshTokens);

@@ -30,7 +30,7 @@ public class OllamaService {
                         .withTemperature(0.5f)
                         .withTopK(5)
                         .withTopP(1f)
-                        .withModel("llama3")
+                        .withModel("llama3.1")
         );
 
         String llama3Response = chatModel.call(llama3Prompt)

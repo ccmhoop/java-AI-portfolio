@@ -42,8 +42,7 @@ public class JwtResolver {
     }
 
     private void jwtVerifyExpiration(JWTClaimsSet claims) throws JOSEException {
-        Instant now = Instant.now();
-        if (claims.getExpirationTime().before(Date.from(now))) {
+        if (claims.getExpirationTime().before(Date.from(Instant.now()))) {
             throw new JOSEException("JWT expired");
         }
     }

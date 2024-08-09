@@ -1,19 +1,30 @@
 package com.conner.assistant.ollama;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/ai")
 public class OllamaController {
 
-    @Autowired
-    private OllamaService ollamaService;
+    private final ChatClient chatClient;
 
-    //TODO split method into token checkers
-    @GetMapping("/generateLlama3")
+    public OllamaController(ChatClient.Builder builder) {
+        this.chatClient = builder
+                .defaultSystem("You're an helpful agent answering questions about cities around the world")
+                .defaultFunctions("currentWeatherFunction")
+                .build();
+    }
+
+    @GetMapping("/ai/generateLlama3")
     public String generate(@RequestParam String prompt) {
-        return ollamaService.generateLlama(prompt);
+        System.out.println("yo");
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+//        return ollamaService.generateLlama(prompt);
     }
 
 //    @GetMapping("/generateStream")

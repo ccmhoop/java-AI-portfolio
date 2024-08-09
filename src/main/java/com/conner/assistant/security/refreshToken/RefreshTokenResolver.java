@@ -21,7 +21,7 @@ public class RefreshTokenResolver {
         if (refreshToken != null && verifyRefreshToken()) {
             return refreshToken.getApplicationUser().getUsername();
         }
-        throw new BadCredentialsException("token");
+        throw new BadCredentialsException("Bad Token");
     }
 
     private boolean verifyRefreshToken() {

@@ -6,9 +6,11 @@ import java.util.Set;
 import com.conner.assistant.applicationUser.ApplicationUser;
 import com.conner.assistant.applicationUser.Role;
 import com.conner.assistant.applicationUser.RoleRepository;
+import com.conner.assistant.ollama.ollamaFunctions.WeatherConfigProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.conner.assistant.applicationUser.UserRepository;
 
 @EnableScheduling
+@EnableConfigurationProperties(WeatherConfigProperties.class)
 @SpringBootApplication
 public class AssistantApplication {
 
