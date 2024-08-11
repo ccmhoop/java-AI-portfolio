@@ -13,8 +13,8 @@ export default function Root() {
 
 
   return (
-    <>
-      <div id="sidebar">
+    <div className="root-grid-container">
+      <div className="sidebar-container">
         <h1>TTB-Industries</h1>
         <div>
           <LoginComponent />
@@ -36,9 +36,9 @@ export default function Root() {
           </div>
         </nav>
       </div>
-      <div id="detail">
+      <div className="outlet-container" >
         <Outlet/>
       </div>
-    </>
+    </div>
   );
 }

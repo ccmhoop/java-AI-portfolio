@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { axiosGetOllama } from '../helpers/axiosPresets.js';
+import {useState} from 'react';
+import {axiosGetOllama} from '../helpers/axiosPresets.js';
 
 export default function OllamaChatComponent() {
 
@@ -23,18 +23,19 @@ export default function OllamaChatComponent() {
 
     return (
         <>
-            <textarea readOnly={true} value={ollamaResponse} />
-            <form onSubmit={handleSubmit}>
+            <textarea className="llm-response" readOnly={true} value={ollamaResponse}/>
+            <form id="llm-input-bar" onSubmit={handleSubmit}>
                 <input
+                    className="llm-input"
                     type="text"
                     value={prompt}
                     name="prompt"
                     onChange={handlePromptChange}
-                    placeholder="Ask LLama3"
+                    placeholder="  Ask LLama3"
                     required
                 />
-                <button type="submit">Submit</button>
             </form>
+            <button form="llm-input-bar" className="llm-submit-button" type="submit">Submit</button>
         </>
     );
 }

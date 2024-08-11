@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     loader: rootLoader,
     children: [
       {
-        path: "",
+        path: "llm",
         element: <Llm/>,
       },
       {
