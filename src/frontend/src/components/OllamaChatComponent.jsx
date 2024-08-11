@@ -31,7 +31,7 @@ export default function OllamaChatComponent() {
                     value={prompt}
                     name="prompt"
                     onChange={handlePromptChange}
-                    placeholder="  Ask LLama3"
+                    placeholder="Ask LLama3"
                     required
                 />
             </form>
